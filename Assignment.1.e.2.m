@@ -2,47 +2,40 @@ clc;
 clear;
 close all;
 
-k = 100; % N/m
+k = 100; % N/m spring constant
 m = 10; % kg
-zeta_values = [0, 0.05, 0.1, 0.5]; % Different damping ratios
+omega = sqrt(k/m); % circular frequency rad/s
+f = omega/(2*pi); % natural frequency in Hz (1/s)
+T = 1/f; % period
 
-t = (0:200) * 0.05;
+t = 0:0.01:4;
 
-x_0 = 20;
-v_0 = 0.;
+disp('Initial Conditions for Case 1:');
+x_0 = input('x_0 [mm]: ');
+v_0 = input('v_0 [mm/s]: ');
 
-figure;
+x1 = x_0 * cos(omega*t) + v_0/omega * sin(omega*t);
 
-for j = 1:length(zeta_values)
-    zeta = zeta_values(j);
-    omega = sqrt(k / m);
-    omegaD = omega * sqrt(1 - zeta^2); % Calculate omegaD for each zeta
-    
-    if zeta < 1    
-        A = x_0;
-        B = (v_0 + x_0 * omega * zeta) / omegaD;
-        X = sqrt(A^2 + B^2);
-        phi = atan(B / A);
-        x = X * exp(-zeta * omega * t) .* cos(omegaD * t - phi);
-        l1 = X * exp(-omega * zeta * t);
-        l2 = -X * exp(-omega * zeta * t);
-        plot(t, x, 'LineWidth', 1.5);
-        hold on;
-       
-    elseif zeta == 1
-        x = exp(-omega * t) .* (x_0 * (1 + omega * t) + v_0 * t);
-        plot(t, x, 'LineWidth', 1.5);
-    else
-        omegaD2 = omega * sqrt(-1 + zeta^2);
-        c1 = x_0 / 2 + v_0 / 2 / omegaD + zeta * omega * x_0 / omegaD2 / 2;
-        c2 = x_0 / 2 - v_0 / 2 / omegaD - zeta * omega * x_0 / omegaD2 / 2;
-        x = exp(-zeta * omega * t) .* (c1 * exp(omegaD2 * t) + c2 * exp(-omegaD2 * t));
-        plot(t, x, 'LineWidth', 1.5);
-    end
-end
+plot(t, x1, 'LineWidth', 1.5);
+hold on;
+
+disp('Initial Conditions for Case 2:');
+x_0 = input('x_0 [mm]: ');
+v_0 = input('v_0 [mm/s]: ');
+
+x2 = x_0 * cos(omega*t) + v_0/omega * sin(omega*t);
+
+plot(t, x2 , 'LineWidth', 1.5);
+
+disp('Initial Conditions for Case 3:');
+x_0 = input('x_0 [mm]: ');
+v_0 = input('v_0 [mm/s]: ');
+
+x3 = x_0 * cos(omega*t) + v_0/omega * sin(omega*t);
+
+plot(t, x3, 'LineWidth', 1.5);
 
 xlabel('time [s]', 'fontsize', 14);
 ylabel('Displacement [mm]', 'fontsize', 14);
-title('System Response for Different Damping Ratios');
-legend('\zeta = 0', '\zeta = 0.05', '\zeta = 0.1', '\zeta = 0.5');
 grid on;
+legend('x0=20 , v0=0', 'x0=0 , v0=50', 'x0=20 , v0=50');
